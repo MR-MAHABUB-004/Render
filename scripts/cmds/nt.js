@@ -1,8 +1,13 @@
 const axios = require("axios");
 
+const baseApiUrl = async () => {
+  const res = await axios.get("https://raw.githubusercontent.com/MR-MAHABUB-004/MAHABUB-BOT-STORAGE/refs/heads/main/APIURL.json");
+  return res.data.sim; 
+};
+
 module.exports.config = {
   name: "nt",
-  version: "4.0.0",
+  version: "4.1.0",
   author: "MR᭄﹅ MAHABUB﹅ メꪜ",
   role: 0,
   category: "chat",
@@ -14,9 +19,10 @@ module.exports.config = {
 module.exports.onStart = async function ({ api, event, args }) {
   try {
     const text = args.join(" ").trim();
+    const apiUrl = await baseApiUrl();
 
     if (text.startsWith("ask=") && (text.includes("$ans=") || text.includes("&ans="))) {
-      const match = text.match(/ask=(.?)(?:\$ans=|&ans=)(.)/);
+      const match = text.match(/ask=(.+?)(?:\$ans=|&ans=)(.+)/);
       if (!match)
         return api.sendMessage(
           "❌ Wrong format\nUse:\nnt ask=Q$ans=A\nor\nnt ask=Q&ans=A",
@@ -30,9 +36,7 @@ module.exports.onStart = async function ({ api, event, args }) {
         return api.sendMessage("❌ Question or answer missing", event.threadID);
 
       await axios.get(
-        `https://mahabubxnirob-simisimi.onrender.com/teach?q=${encodeURIComponent(
-          question
-        )}&ans=${encodeURIComponent(answer)}`
+        `${apiUrl}/teach?q=${encodeURIComponent(question)}&ans=${encodeURIComponent(answer)}`
       );
 
       return api.sendMessage(
@@ -72,10 +76,9 @@ module.exports.onReply = async function ({ api, event, usersData }) {
     const answer = event.body?.trim();
     if (!answer) return;
 
+    const apiUrl = await baseApiUrl();
     await axios.get(
-      `https://mahabubxnirob-simisimi.onrender.com/teach?q=${encodeURIComponent(
-        data.question
-      )}&ans=${encodeURIComponent(answer)}`
+      `${apiUrl}/teach?q=${encodeURIComponent(data.question)}&ans=${encodeURIComponent(answer)}`
     );
 
     await usersData.addMoney(event.senderID, 100);
@@ -108,16 +111,17 @@ module.exports.onReply = async function ({ api, event, usersData }) {
       editID: sent.messageID
     });
   } catch (e) {
-    console.log("NT REPLY ERROR:", e);
+    console.log("NEW QUESTION REPLY ERROR:", e);
   }
 };
 
 async function getRandomQuestion() {
   try {
-    const res = await axios.get("https://mahabubxnirob-simisimi.onrender.com/nt");
+    const apiUrl = await baseApiUrl();
+    const res = await axios.get(`${apiUrl}/nt`);
     return res.data?.question || null;
   } catch (e) {
-    console.log("GET RANDOM NT ERROR:", e);
+    console.log("GET RANDOM NEW QUESTION ERROR:", e);
     return null;
   }
 }
