@@ -58,7 +58,7 @@ module.exports = {
 
     try {
       const response = await fetchWithRetry(
-        `${apiBaseURL}/api/alldl?url=${encodeURIComponent(videoLink)}`
+        `${apiBaseURL}/mahabub/dl?url=${encodeURIComponent(videoLink)}`
       );
 
       const { platform, title, hd, sd } = response.data;
@@ -88,7 +88,7 @@ module.exports = {
 
       api.setMessageReaction("✔", event.messageID, () => {}, true);
       await api.sendMessage({
-        body: `✅ 𝗗𝗼𝘄𝗻𝗹𝗼𝗮𝗱𝗲𝗱!\n\n📌 Platform: ${platform || "Unknown"}\n🎬 Title: ${title || "No Title"}\n📥 Quality: ${hd ? "HD" : "SD"}`,
+        body: `✅ 𝗗𝗼𝘄𝗻𝗹𝗼𝗮𝗱𝗲𝗱!\n\n📌 Platform: ${platform || "Unknown"}\n🎬 Title: ${title || "No Title"}`,
         attachment: fs.createReadStream(filePath)
       }, threadID, () => fs.unlinkSync(filePath));
 
